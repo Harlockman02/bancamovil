@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Banca Pro Cuba</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-bg: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text-gray: #8E8E93;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--ios-bg);
+            margin: 0;
+            padding: 20px 15px;
+            color: #000;
+            padding-bottom: 100px;
+        }
+
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { font-size: 22px; font-weight: 700; }
+
+        /* Selector de Bancos */
+        .bank-selector {
+            display: flex;
+            background: #E3E3E8;
+            padding: 2px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .tab.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* Formulario dinámico */
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #ddd;
+        }
+
+        .form-container.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px; /* Evita zoom automático en iPhone */
+        }
+
+        .action-btn {
+            width: 100%;
+            background: var(--ios-blue);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* Grid de botones principales */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+            color: black;
+            border: none;
+        }
+
+        .btn span { display: block; font-size: 10px; color: var(--text-gray); margin-top: 4px; }
+        .btn:active { background: #E5E5EA; }
+        .btn-blue { color: var(--ios-blue); border: 1px solid #d0e2ff; }
+        
+        .close-form {
+            float: right;
+            color: var(--text-gray);
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Banca USSD Inteligente</h1>
+    <div class="bank-selector">
+        <div id="tab02" class="tab active" onclick="setBank('02')">BANDEC</div>
+        <div id="tab01" class="tab" onclick="setBank('01')">BPA</div>
+        <div id="tab03" class="tab" onclick="setBank('03')">METRO</div>
+    </div>
+</header>
+
+<div id="dynamic-form" class="form-container">
+    <span class="close-form" onclick="closeForm()">&times;</span>
+    <h3 id="form-title" style="margin-top:0">Operación</h3>
+    <div id="form-inputs"></div>
+    <button class="action-btn" onclick="executeUSSD()">Marcar Código</button>
+</div>
+
+<div class="grid">
+    <button class="btn btn-blue" onclick="showForm('auth')">Autenticar <span>*444*40*XX#</span></button>
+    <button class="btn" onclick="showForm('saldo')">Saldo <span>*444*46#</span></button>
+    <button class="btn" onclick="showForm('transfer')">Transferir <span>*444*45#</span></button>
+    <button class="btn" onclick="showForm('recarga')">Recarga Móvil <span>*444*54#</span></button>
+    <button class="btn" onclick="showForm('elect')">Electricidad <span>*444*41#</span></button>
+    <button class="btn" onclick="directCall('*444*48')">Últimas Op. <span>*444*48#</span></button>
+    <button class="btn" onclick="directCall('*444*70')" style="color:red">Cerrar Sesión <span>*444*70#</span></button>
+</div>
+
+<script>
+    let currentBank = '02';
+    let currentOp = '';
+
+    function setBank(code) {
+        currentBank = code;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab' + code).classList.add('active');
+        closeForm();
+    }
+
+    function closeForm() {
+        document.getElementById('dynamic-form').classList.remove('active');
+    }
+
+    function showForm(op) {
+        currentOp = op;
+        const container = document.getElementById('dynamic-form');
+        const inputs = document.getElementById('form-inputs');
+        const title = document.getElementById('form-title');
+        
+        container.classList.add('active');
+        inputs.innerHTML = '';
+
+        if(op === 'auth') {
+            title.innerText = 'Autenticar';
+            inputs.innerHTML = '<input type="password" id="pin" placeholder="PIN de Pago (5 digitos)" maxlength="5" inputmode="numeric">';
+        } else if(op === 'saldo') {
+            title.innerText = 'Consultar Saldo';
+            inputs.innerHTML = '<input type="password" id="pin" placeholder="PIN de Pago" maxlength="5" inputmode="numeric">';
+        } else if(op === 'transfer') {
+            title.innerText = 'Transferencia';
+            inputs.innerHTML = `
+                <input type="password" id="pin" placeholder="Su PIN de Pago" maxlength="5" inputmode="numeric">
+                <input type="number" id="dest" placeholder="Tarjeta Destino" inputmode="numeric">
+                <input type="number" id="monto" placeholder="Monto" inputmode="decimal">
+            `;
+        } else if(op === 'recarga') {
+            title.innerText = 'Recarga Móvil';
+            inputs.innerHTML = `
+                <input type="password" id="pin" placeholder="Su PIN de Pago" maxlength="5" inputmode="numeric">
+                <input type="number" id="tel" placeholder="Número a recargar" maxlength="8" inputmode="tel">
+                <input type="number" id="monto" placeholder="Monto" inputmode="numeric">
+            `;
+        } else if(op === 'elect') {
+            title.innerText = 'Pago Electricidad';
+            inputs.innerHTML = `
+                <input type="password" id="pin" placeholder="Su PIN de Pago" maxlength="5" inputmode="numeric">
+                <input type="number" id="id_elect" placeholder="ID de Cajero (13 digitos)" inputmode="numeric">
+            `;
+        }
+    }
+
+    function executeUSSD() {
+        let code = "";
+        const pin = document.getElementById('pin')?.value || "";
+
+        switch(currentOp) {
+            case 'auth':
+                code = `*444*40*${currentBank}*${pin}`;
+                break;
+            case 'saldo':
+                code = `*444*46*${pin}`;
+                break;
+            case 'transfer':
+                const dest = document.getElementById('dest').value;
+                const monto = document.getElementById('monto').value;
+                code = `*444*45*${pin}*${dest}*${monto}`;
+                break;
+            case 'recarga':
+                const tel = document.getElementById('tel').value;
+                const rec = document.getElementById('monto').value;
+                code = `*444*54*${pin}*${tel}*${rec}`;
+                break;
+            case 'elect':
+                const idEl = document.getElementById('id_elect').value;
+                code = `*444*41*${pin}*${idEl}`;
+                break;
+        }
+
+        if(code) directCall(code);
+    }
+
+    function directCall(code) {
+        // El símbolo # debe ser %23 para iOS
+        window.location.href = "tel:" + code + "%23";
+    }
+</script>
+
+</body>
+</html>
