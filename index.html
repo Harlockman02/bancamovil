@@ -283,12 +283,25 @@
             color: #721c24;
         }
         
+        .info-text {
+            font-size: 0.8rem;
+            color: #8e8e93;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
         .hidden {
             display: none !important;
         }
         
         .icon {
             font-size: 1.2rem;
+        }
+        
+        .input-hint {
+            font-size: 0.75rem;
+            color: #8e8e93;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -316,7 +329,7 @@
         <div class="operation" onclick="openModal('auth')">
             <div class="op-info">
                 <h3>Autenticar</h3>
-                <p>Iniciar sesión en el sistema</p>
+                <p>Iniciar sesión con PIN completo</p>
             </div>
             <button class="execute-btn">Ejecutar</button>
         </div>
@@ -607,10 +620,14 @@
                     html = `
                         <div class="form-group">
                             <label>PIN de Telebanca (4 dígitos)</label>
-                            <input type="password" id="authPin" maxlength="4" inputmode="numeric" placeholder="****">
+                            <input type="password" id="authPin" maxlength="4" inputmode="numeric" placeholder="****" oninput="updateAuthPreview()">
+                            <div class="input-hint">Introduce tu PIN de 4 dígitos</div>
                         </div>
                         <div class="preview-code" id="preview">*444*40*${bankCode}#</div>
                         <button class="launch-btn" onclick="launchAuth()">📞 Llamar y Autenticar</button>
+                        <p class="info-text">
+                            El código se actualizará automáticamente con tu PIN. Después de llamar, confirma en la pantalla del iPhone.
+                        </p>
                     `;
                     break;
                     
@@ -619,10 +636,14 @@
                     html = `
                         <div class="form-group">
                             <label>Número de Tarjeta Telebanca (PAN)</label>
-                            <input type="text" id="regPan" maxlength="16" inputmode="numeric" placeholder="16 dígitos de tu tarjeta">
+                            <input type="text" id="regPan" maxlength="16" inputmode="numeric" placeholder="16 dígitos de tu tarjeta" oninput="updateRegisterPreview()">
+                            <div class="input-hint">16 dígitos del frente de tu tarjeta</div>
                         </div>
                         <div class="preview-code" id="preview">*444*49*${bankCode}*PAN#</div>
                         <button class="launch-btn" onclick="launchRegister()">📞 Registrar</button>
+                        <p class="info-text">
+                            El código incluirá tu número de tarjeta completo. Solo confirma la llamada.
+                        </p>
                     `;
                     break;
                     
@@ -643,20 +664,22 @@
                     html = `
                         <div class="form-group">
                             <label>Número de cuenta destino</label>
-                            <input type="text" id="transAccount" placeholder="Número de cuenta completo">
+                            <input type="text" id="transAccount" placeholder="Número de cuenta completo" oninput="updateTransferPreview()">
+                            <div class="input-hint">Cuenta del destinatario</div>
                         </div>
                         <div class="form-group">
                             <label>Monto (CUP)</label>
-                            <input type="number" id="transAmount" placeholder="Cantidad en pesos">
+                            <input type="number" id="transAmount" placeholder="Cantidad en pesos" oninput="updateTransferPreview()">
+                            <div class="input-hint">Cantidad a transferir</div>
                         </div>
                         <div class="form-group">
-                            <label>Concepto (opcional)</label>
-                            <input type="text" id="transConcept" maxlength="20" placeholder="Breve descripción">
+                            <label>Concepto (opcional, máx 20 caracteres)</label>
+                            <input type="text" id="transConcept" maxlength="20" placeholder="Breve descripción" oninput="updateTransferPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*45#</div>
                         <button class="launch-btn" onclick="launchTransfer()">📞 Iniciar Transferencia</button>
-                        <p style="margin-top:10px;font-size:0.8rem;color:#8e8e93;">
-                            Nota: Después de llamar, el sistema te pedirá los datos paso a paso.
+                        <p class="info-text">
+                            <strong>Nota:</strong> La transferencia usa menú interactivo. Después de llamar, el sistema te pedirá confirmar los datos paso a paso. Algunos bancos permiten códigos completos: <code>*444*45*CUENTA*MONTO*CONCEPTO#</code>
                         </p>
                     `;
                     break;
@@ -666,14 +689,19 @@
                     html = `
                         <div class="form-group">
                             <label>Número de móvil a recargar</label>
-                            <input type="tel" id="rechargePhone" maxlength="8" inputmode="numeric" placeholder="5XXXXXXX">
+                            <input type="tel" id="rechargePhone" maxlength="8" inputmode="numeric" placeholder="5XXXXXXX" oninput="updateRechargePreview()">
+                            <div class="input-hint">8 dígitos, ejemplo: 51234567</div>
                         </div>
                         <div class="form-group">
                             <label>Monto (CUP)</label>
-                            <input type="number" id="rechargeAmount" placeholder="Cantidad">
+                            <input type="number" id="rechargeAmount" placeholder="Cantidad" oninput="updateRechargePreview()">
+                            <div class="input-hint">Mínimo usual: 100 CUP</div>
                         </div>
                         <div class="preview-code" id="preview">*444*54#</div>
                         <button class="launch-btn" onclick="launchRecharge()">📞 Recargar</button>
+                        <p class="info-text">
+                            <strong>Nota:</strong> Algunos bancos permiten código completo: <code>*444*54*TELEFONO*MONTO#</code>. Si tu banco lo soporta, se generará automáticamente.
+                        </p>
                     `;
                     break;
                     
@@ -682,7 +710,7 @@
                     html = `
                         <div class="form-group">
                             <label>Tipo de cuenta Nauta</label>
-                            <select id="nautaType">
+                            <select id="nautaType" onchange="updateNautaPreview()">
                                 <option value="59">Nauta Normal (*444*59#)</option>
                                 <option value="84">Nauta Hogar (*444*84#)</option>
                                 <option value="86">Nauta Plus (*444*86#)</option>
@@ -690,29 +718,38 @@
                         </div>
                         <div class="form-group">
                             <label>Usuario Nauta (sin @nauta.com.cu)</label>
-                            <input type="text" id="nautaUser" placeholder="usuario">
+                            <input type="text" id="nautaUser" placeholder="usuario" oninput="updateNautaPreview()">
+                            <div class="input-hint">Ejemplo: juanperez</div>
                         </div>
                         <div class="form-group">
                             <label>Monto (CUP)</label>
-                            <input type="number" id="nautaAmount" placeholder="Cantidad">
+                            <input type="number" id="nautaAmount" placeholder="Cantidad" oninput="updateNautaPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*59#</div>
                         <button class="launch-btn" onclick="launchNauta()">📞 Recargar Nauta</button>
+                        <p class="info-text">
+                            <strong>Nota:</strong> Algunos bancos permiten: <code>*444*59*USUARIO*MONTO#</code>. El código se actualizará si es soportado.
+                        </p>
                     `;
-                    document.getElementById('nautaType').onchange = function() {
-                        document.getElementById('preview').textContent = `*444*${this.value}#`;
-                    };
                     break;
                     
                 case 'payElectricity':
                     title.textContent = '⚡ Pagar Electricidad';
                     html = `
                         <div class="form-group">
-                            <label>Número de contrato</label>
-                            <input type="text" id="elecContract" placeholder="Número de contrato eléctrico">
+                            <label>Número de contrato eléctrico</label>
+                            <input type="text" id="elecContract" placeholder="Número de contrato" oninput="updateElectricityPreview()">
+                            <div class="input-hint">Número en tu factura de electricidad</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Monto a pagar (CUP)</label>
+                            <input type="number" id="elecAmount" placeholder="Cantidad" oninput="updateElectricityPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*41#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*41#')">📞 Pagar Electricidad</button>
+                        <button class="launch-btn" onclick="launchElectricity()">📞 Pagar Electricidad</button>
+                        <p class="info-text">
+                            Código completo posible: <code>*444*41*CONTRATO*MONTO#</code>
+                        </p>
                     `;
                     break;
                     
@@ -721,10 +758,18 @@
                     html = `
                         <div class="form-group">
                             <label>Número de teléfono fijo</label>
-                            <input type="text" id="phoneNumber" placeholder="Número completo">
+                            <input type="text" id="phoneNumber" placeholder="Número completo" oninput="updatePhonePreview()">
+                            <div class="input-hint">Ejemplo: 72012345</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Monto a pagar (CUP)</label>
+                            <input type="number" id="phoneAmount" placeholder="Cantidad" oninput="updatePhonePreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*42#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*42#')">📞 Pagar Teléfono</button>
+                        <button class="launch-btn" onclick="launchPhone()">📞 Pagar Teléfono</button>
+                        <p class="info-text">
+                            Código completo posible: <code>*444*42*TELEFONO*MONTO#</code>
+                        </p>
                     `;
                     break;
                     
@@ -732,11 +777,15 @@
                     title.textContent = '💧 Pagar Agua';
                     html = `
                         <div class="form-group">
-                            <label>Número de contrato</label>
-                            <input type="text" id="waterContract" placeholder="Número de contrato">
+                            <label>Número de contrato de agua</label>
+                            <input type="text" id="waterContract" placeholder="Número de contrato" oninput="updateWaterPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Monto a pagar (CUP)</label>
+                            <input type="number" id="waterAmount" placeholder="Cantidad" oninput="updateWaterPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*51#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*51#')">📞 Pagar Agua</button>
+                        <button class="launch-btn" onclick="launchWater()">📞 Pagar Agua</button>
                     `;
                     break;
                     
@@ -744,11 +793,15 @@
                     title.textContent = '🔥 Pagar Gas';
                     html = `
                         <div class="form-group">
-                            <label>Número de contrato</label>
-                            <input type="text" id="gasContract" placeholder="Número de contrato">
+                            <label>Número de contrato de gas</label>
+                            <input type="text" id="gasContract" placeholder="Número de contrato" oninput="updateGasPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Monto a pagar (CUP)</label>
+                            <input type="number" id="gasAmount" placeholder="Cantidad" oninput="updateGasPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*67#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*67#')">📞 Pagar Gas</button>
+                        <button class="launch-btn" onclick="launchGas()">📞 Pagar Gas</button>
                     `;
                     break;
                     
@@ -757,10 +810,15 @@
                     html = `
                         <div class="form-group">
                             <label>Código de Recibo (RC)</label>
-                            <input type="text" id="onatRc" placeholder="RC05, RC10, etc.">
+                            <input type="text" id="onatRc" placeholder="RC05, RC10, etc." oninput="updateOnatPreview()">
+                            <div class="input-hint">Tipo de recibo de pago</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Monto a pagar (CUP)</label>
+                            <input type="number" id="onatAmount" placeholder="Cantidad" oninput="updateOnatPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*43#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*43#')">📞 Pagar ONAT</button>
+                        <button class="launch-btn" onclick="launchOnat()">📞 Pagar ONAT</button>
                     `;
                     break;
                     
@@ -768,15 +826,18 @@
                     title.textContent = '🔑 Cambiar PIN';
                     html = `
                         <div class="form-group">
-                            <label>PIN Actual</label>
-                            <input type="password" id="oldPin" maxlength="4" inputmode="numeric">
+                            <label>PIN Actual (4 dígitos)</label>
+                            <input type="password" id="oldPin" maxlength="4" inputmode="numeric" oninput="updatePinPreview()">
                         </div>
                         <div class="form-group">
                             <label>Nuevo PIN (4 dígitos)</label>
-                            <input type="password" id="newPin" maxlength="4" inputmode="numeric">
+                            <input type="password" id="newPin" maxlength="4" inputmode="numeric" oninput="updatePinPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*69#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*69#')">📞 Cambiar PIN</button>
+                        <button class="launch-btn" onclick="launchPin()">📞 Cambiar PIN</button>
+                        <p class="info-text">
+                            Código completo posible: <code>*444*69*PIN_ACTUAL*NUEVO_PIN#</code>
+                        </p>
                     `;
                     break;
                     
@@ -785,10 +846,10 @@
                     html = `
                         <div class="form-group">
                             <label>Nuevo límite diario (CUP)</label>
-                            <input type="number" id="newLimit" placeholder="Cantidad máxima por día">
+                            <input type="number" id="newLimit" placeholder="Cantidad máxima por día" oninput="updateLimitPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*61#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*61#')">📞 Cambiar Límite</button>
+                        <button class="launch-btn" onclick="launchLimit()">📞 Cambiar Límite</button>
                     `;
                     break;
                     
@@ -796,11 +857,11 @@
                     title.textContent = '💳 Cambiar Tarjeta';
                     html = `
                         <div class="form-group">
-                            <label>Nuevo número de tarjeta</label>
-                            <input type="text" id="newCard" maxlength="16" placeholder="16 dígitos">
+                            <label>Nuevo número de tarjeta (16 dígitos)</label>
+                            <input type="text" id="newCard" maxlength="16" inputmode="numeric" placeholder="16 dígitos" oninput="updateCardPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*60#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*60#')">📞 Cambiar Tarjeta</button>
+                        <button class="launch-btn" onclick="launchCard()">📞 Cambiar Tarjeta</button>
                     `;
                     break;
                     
@@ -809,10 +870,10 @@
                     html = `
                         <div class="form-group">
                             <label>Número de cuenta a asociar</label>
-                            <input type="text" id="assocAccount" placeholder="Número de cuenta">
+                            <input type="text" id="assocAccount" placeholder="Número de cuenta" oninput="updateAssocPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*53#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*53#')">📞 Asociar/Actualizar</button>
+                        <button class="launch-btn" onclick="launchAssoc()">📞 Asociar/Actualizar</button>
                     `;
                     break;
                     
@@ -821,7 +882,7 @@
                     html = `
                         <div class="preview-code" id="preview">*444*76#</div>
                         <button class="launch-btn" onclick="launchCode('*444*76#')">📞 Abrir Cuenta MLC</button>
-                        <p style="margin-top:10px;font-size:0.8rem;color:#8e8e93;">
+                        <p class="info-text">
                             Se te pedirá confirmar la apertura y aceptar los términos.
                         </p>
                     `;
@@ -832,18 +893,22 @@
                     html = `
                         <div class="form-group">
                             <label>Carnet de Identidad</label>
-                            <input type="text" id="mtCi" maxlength="11" placeholder="XXXXXXXXXXX">
+                            <input type="text" id="mtCi" maxlength="11" placeholder="XXXXXXXXXXX" oninput="updateMiturnoPreview()">
+                            <div class="input-hint">11 dígitos sin espacios</div>
                         </div>
                         <div class="form-group">
                             <label>Cuenta bancaria (opcional)</label>
-                            <input type="text" id="mtAccount" placeholder="Número de cuenta">
+                            <input type="text" id="mtAccount" placeholder="Número de cuenta" oninput="updateMiturnoPreview()">
                         </div>
                         <div class="form-group">
                             <label>Móvil de confirmación (opcional)</label>
-                            <input type="tel" id="mtPhone" maxlength="8" placeholder="5XXXXXXX">
+                            <input type="tel" id="mtPhone" maxlength="8" placeholder="5XXXXXXX" oninput="updateMiturnoPreview()">
                         </div>
-                        <div class="preview-code" id="preview">*444*102*${bankCode}*1*CI*CUENTA*MOVIL#</div>
+                        <div class="preview-code" id="preview">*444*102*${bankCode}*1*CI#</div>
                         <button class="launch-btn" onclick="launchMiturnoReserve()">📞 Reservar Turno</button>
+                        <p class="info-text">
+                            Código completo: <code>*444*102*BANCO*1*CI*CUENTA*MOVIL#</code>
+                        </p>
                     `;
                     break;
                     
@@ -852,10 +917,13 @@
                     html = `
                         <div class="form-group">
                             <label>Carnet de Identidad</label>
-                            <input type="text" id="mtqCi" maxlength="11" placeholder="XXXXXXXXXXX">
+                            <input type="text" id="mtqCi" maxlength="11" placeholder="XXXXXXXXXXX" oninput="updateMiturnoQueryPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*107#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*107#')">📞 Consultar</button>
+                        <button class="launch-btn" onclick="launchMiturnoQuery()">📞 Consultar</button>
+                        <p class="info-text">
+                            Código completo: <code>*444*107*CI#</code>
+                        </p>
                     `;
                     break;
                     
@@ -864,11 +932,11 @@
                     html = `
                         <div class="form-group">
                             <label>Carnet de Identidad</label>
-                            <input type="text" id="mtcCi" maxlength="11" placeholder="XXXXXXXXXXX">
+                            <input type="text" id="mtcCi" maxlength="11" placeholder="XXXXXXXXXXX" oninput="updateMiturnoChangePreview()">
                         </div>
                         <div class="form-group">
-                            <label>Nueva fecha (DDMMYYYY)</label>
-                            <input type="text" id="mtcDate" maxlength="8" placeholder="25042026">
+                            <label>Nueva fecha (DDMMAAAA)</label>
+                            <input type="text" id="mtcDate" maxlength="8" placeholder="25042026" oninput="updateMiturnoChangePreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*105*1*CI#</div>
                         <button class="launch-btn" onclick="launchMiturnoChange()">📞 Cambiar Fecha</button>
@@ -880,10 +948,14 @@
                     html = `
                         <div class="form-group">
                             <label>Número de crédito</label>
-                            <input type="text" id="amortCredit" placeholder="Número de operación de crédito">
+                            <input type="text" id="amortCredit" placeholder="Número de operación de crédito" oninput="updateAmortPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Monto a pagar (CUP)</label>
+                            <input type="number" id="amortAmount" placeholder="Cantidad" oninput="updateAmortPreview()">
                         </div>
                         <div class="preview-code" id="preview">*444*55#</div>
-                        <button class="launch-btn" onclick="launchCode('*444*55#')">📞 Pagar Amortización</button>
+                        <button class="launch-btn" onclick="launchAmort()">📞 Pagar Amortización</button>
                     `;
                     break;
             }
@@ -891,6 +963,230 @@
             body.innerHTML = html;
             modal.classList.add('active');
         }
+
+        // ===== FUNCIONES DE ACTUALIZACIÓN DE PREVIEW =====
+        
+        function updateAuthPreview() {
+            const pin = document.getElementById('authPin').value;
+            const preview = document.getElementById('preview');
+            if (pin.length === 4) {
+                preview.textContent = `*444*40*${bankCode}*${pin}#`;
+            } else {
+                preview.textContent = `*444*40*${bankCode}#`;
+            }
+        }
+
+        function updateRegisterPreview() {
+            const pan = document.getElementById('regPan').value;
+            const preview = document.getElementById('preview');
+            if (pan.length >= 16) {
+                preview.textContent = `*444*49*${bankCode}*${pan}#`;
+            } else {
+                preview.textContent = `*444*49*${bankCode}*PAN#`;
+            }
+        }
+
+        function updateTransferPreview() {
+            const account = document.getElementById('transAccount').value;
+            const amount = document.getElementById('transAmount').value;
+            const concept = document.getElementById('transConcept').value;
+            const preview = document.getElementById('preview');
+            
+            if (account && amount) {
+                let code = `*444*45*${account}*${amount}`;
+                if (concept) code += `*${concept}`;
+                code += '#';
+                preview.textContent = code;
+            } else {
+                preview.textContent = '*444*45#';
+            }
+        }
+
+        function updateRechargePreview() {
+            const phone = document.getElementById('rechargePhone').value;
+            const amount = document.getElementById('rechargeAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (phone.length === 8 && amount) {
+                preview.textContent = `*444*54*${phone}*${amount}#`;
+            } else {
+                preview.textContent = '*444*54#';
+            }
+        }
+
+        function updateNautaPreview() {
+            const type = document.getElementById('nautaType').value;
+            const user = document.getElementById('nautaUser').value;
+            const amount = document.getElementById('nautaAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (user && amount) {
+                preview.textContent = `*444*${type}*${user}*${amount}#`;
+            } else {
+                preview.textContent = `*444*${type}#`;
+            }
+        }
+
+        function updateElectricityPreview() {
+            const contract = document.getElementById('elecContract').value;
+            const amount = document.getElementById('elecAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (contract && amount) {
+                preview.textContent = `*444*41*${contract}*${amount}#`;
+            } else {
+                preview.textContent = '*444*41#';
+            }
+        }
+
+        function updatePhonePreview() {
+            const phone = document.getElementById('phoneNumber').value;
+            const amount = document.getElementById('phoneAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (phone && amount) {
+                preview.textContent = `*444*42*${phone}*${amount}#`;
+            } else {
+                preview.textContent = '*444*42#';
+            }
+        }
+
+        function updateWaterPreview() {
+            const contract = document.getElementById('waterContract').value;
+            const amount = document.getElementById('waterAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (contract && amount) {
+                preview.textContent = `*444*51*${contract}*${amount}#`;
+            } else {
+                preview.textContent = '*444*51#';
+            }
+        }
+
+        function updateGasPreview() {
+            const contract = document.getElementById('gasContract').value;
+            const amount = document.getElementById('gasAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (contract && amount) {
+                preview.textContent = `*444*67*${contract}*${amount}#`;
+            } else {
+                preview.textContent = '*444*67#';
+            }
+        }
+
+        function updateOnatPreview() {
+            const rc = document.getElementById('onatRc').value;
+            const amount = document.getElementById('onatAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (rc && amount) {
+                preview.textContent = `*444*43*${rc}*${amount}#`;
+            } else {
+                preview.textContent = '*444*43#';
+            }
+        }
+
+        function updatePinPreview() {
+            const oldPin = document.getElementById('oldPin').value;
+            const newPin = document.getElementById('newPin').value;
+            const preview = document.getElementById('preview');
+            
+            if (oldPin.length === 4 && newPin.length === 4) {
+                preview.textContent = `*444*69*${oldPin}*${newPin}#`;
+            } else {
+                preview.textContent = '*444*69#';
+            }
+        }
+
+        function updateLimitPreview() {
+            const limit = document.getElementById('newLimit').value;
+            const preview = document.getElementById('preview');
+            
+            if (limit) {
+                preview.textContent = `*444*61*${limit}#`;
+            } else {
+                preview.textContent = '*444*61#';
+            }
+        }
+
+        function updateCardPreview() {
+            const card = document.getElementById('newCard').value;
+            const preview = document.getElementById('preview');
+            
+            if (card.length >= 16) {
+                preview.textContent = `*444*60*${card}#`;
+            } else {
+                preview.textContent = '*444*60#';
+            }
+        }
+
+        function updateAssocPreview() {
+            const account = document.getElementById('assocAccount').value;
+            const preview = document.getElementById('preview');
+            
+            if (account) {
+                preview.textContent = `*444*53*${account}#`;
+            } else {
+                preview.textContent = '*444*53#';
+            }
+        }
+
+        function updateMiturnoPreview() {
+            const ci = document.getElementById('mtCi').value;
+            const account = document.getElementById('mtAccount').value;
+            const phone = document.getElementById('mtPhone').value;
+            const preview = document.getElementById('preview');
+            
+            if (ci.length === 11) {
+                let code = `*444*102*${bankCode}*1*${ci}`;
+                if (account) code += `*${account}`;
+                if (phone) code += `*${phone}`;
+                code += '#';
+                preview.textContent = code;
+            } else {
+                preview.textContent = `*444*102*${bankCode}*1*CI#`;
+            }
+        }
+
+        function updateMiturnoQueryPreview() {
+            const ci = document.getElementById('mtqCi').value;
+            const preview = document.getElementById('preview');
+            
+            if (ci.length === 11) {
+                preview.textContent = `*444*107*${ci}#`;
+            } else {
+                preview.textContent = '*444*107#';
+            }
+        }
+
+        function updateMiturnoChangePreview() {
+            const ci = document.getElementById('mtcCi').value;
+            const date = document.getElementById('mtcDate').value;
+            const preview = document.getElementById('preview');
+            
+            if (ci.length === 11 && date.length === 8) {
+                preview.textContent = `*444*105*1*${ci}*${date}#`;
+            } else if (ci.length === 11) {
+                preview.textContent = `*444*105*1*${ci}#`;
+            } else {
+                preview.textContent = '*444*105*1*CI#';
+            }
+        }
+
+        function updateAmortPreview() {
+            const credit = document.getElementById('amortCredit').value;
+            const amount = document.getElementById('amortAmount').value;
+            const preview = document.getElementById('preview');
+            
+            if (credit && amount) {
+                preview.textContent = `*444*55*${credit}*${amount}#`;
+            } else {
+                preview.textContent = '*444*55#';
+            }
+        }
+
+        // ===== FUNCIONES DE LANZAMIENTO =====
 
         function launchCode(code) {
             if (confirm(`¿Ejecutar el código USSD?\n\n${code}`)) {
@@ -902,11 +1198,11 @@
         function launchAuth() {
             const pin = document.getElementById('authPin').value;
             if (pin.length !== 4) {
-                alert('El PIN debe tener 4 dígitos');
+                alert('El PIN debe tener exactamente 4 dígitos');
                 return;
             }
-            // El PIN se introduce en el menú interactivo, no en el código inicial
-            launchCode(`*444*40*${bankCode}#`);
+            const code = `*444*40*${bankCode}*${pin}#`;
+            launchCode(code);
         }
 
         function launchRegister() {
@@ -915,45 +1211,166 @@
                 alert('El número de tarjeta debe tener 16 dígitos');
                 return;
             }
-            launchCode(`*444*49*${bankCode}*${pan}#`);
+            const code = `*444*49*${bankCode}*${pan}#`;
+            launchCode(code);
         }
 
         function launchTransfer() {
             const account = document.getElementById('transAccount').value;
             const amount = document.getElementById('transAmount').value;
+            
             if (!account || !amount) {
-                alert('Completa todos los campos');
+                alert('Completa al menos el número de cuenta y el monto');
                 return;
             }
-            // Transferencia usa menú interactivo
-            launchCode('*444*45#');
+            
+            let code = `*444*45*${account}*${amount}`;
+            const concept = document.getElementById('transConcept').value;
+            if (concept) code += `*${concept}`;
+            code += '#';
+            
+            launchCode(code);
         }
 
         function launchRecharge() {
             const phone = document.getElementById('rechargePhone').value;
             const amount = document.getElementById('rechargeAmount').value;
+            
             if (phone.length !== 8 || !amount) {
                 alert('Verifica el número (8 dígitos) y el monto');
                 return;
             }
-            launchCode('*444*54#');
+            
+            const code = `*444*54*${phone}*${amount}#`;
+            launchCode(code);
         }
 
         function launchNauta() {
             const type = document.getElementById('nautaType').value;
             const user = document.getElementById('nautaUser').value;
             const amount = document.getElementById('nautaAmount').value;
+            
             if (!user || !amount) {
-                alert('Completa todos los campos');
+                alert('Completa usuario y monto');
                 return;
             }
-            launchCode(`*444*${type}#`);
+            
+            const code = `*444*${type}*${user}*${amount}#`;
+            launchCode(code);
+        }
+
+        function launchElectricity() {
+            const contract = document.getElementById('elecContract').value;
+            const amount = document.getElementById('elecAmount').value;
+            
+            if (!contract || !amount) {
+                alert('Completa contrato y monto');
+                return;
+            }
+            
+            const code = `*444*41*${contract}*${amount}#`;
+            launchCode(code);
+        }
+
+        function launchPhone() {
+            const phone = document.getElementById('phoneNumber').value;
+            const amount = document.getElementById('phoneAmount').value;
+            
+            if (!phone || !amount) {
+                alert('Completa teléfono y monto');
+                return;
+            }
+            
+            const code = `*444*42*${phone}*${amount}#`;
+            launchCode(code);
+        }
+
+        function launchWater() {
+            const contract = document.getElementById('waterContract').value;
+            const amount = document.getElementById('waterAmount').value;
+            
+            if (!contract || !amount) {
+                alert('Completa contrato y monto');
+                return;
+            }
+            
+            const code = `*444*51*${contract}*${amount}#`;
+            launchCode(code);
+        }
+
+        function launchGas() {
+            const contract = document.getElementById('gasContract').value;
+            const amount = document.getElementById('gasAmount').value;
+            
+            if (!contract || !amount) {
+                alert('Completa contrato y monto');
+                return;
+            }
+            
+            const code = `*444*67*${contract}*${amount}#`;
+            launchCode(code);
+        }
+
+        function launchOnat() {
+            const rc = document.getElementById('onatRc').value;
+            const amount = document.getElementById('onatAmount').value;
+            
+            if (!rc || !amount) {
+                alert('Completa código RC y monto');
+                return;
+            }
+            
+            const code = `*444*43*${rc}*${amount}#`;
+            launchCode(code);
+        }
+
+        function launchPin() {
+            const oldPin = document.getElementById('oldPin').value;
+            const newPin = document.getElementById('newPin').value;
+            
+            if (oldPin.length !== 4 || newPin.length !== 4) {
+                alert('Ambos PINs deben tener 4 dígitos');
+                return;
+            }
+            
+            const code = `*444*69*${oldPin}*${newPin}#`;
+            launchCode(code);
+        }
+
+        function launchLimit() {
+            const limit = document.getElementById('newLimit').value;
+            if (!limit) {
+                alert('Introduce un límite');
+                return;
+            }
+            const code = `*444*61*${limit}#`;
+            launchCode(code);
+        }
+
+        function launchCard() {
+            const card = document.getElementById('newCard').value;
+            if (card.length < 16) {
+                alert('La tarjeta debe tener 16 dígitos');
+                return;
+            }
+            const code = `*444*60*${card}#`;
+            launchCode(code);
+        }
+
+        function launchAssoc() {
+            const account = document.getElementById('assocAccount').value;
+            if (!account) {
+                alert('Introduce una cuenta');
+                return;
+            }
+            const code = `*444*53*${account}#`;
+            launchCode(code);
         }
 
         function launchMiturnoReserve() {
             const ci = document.getElementById('mtCi').value;
-            const account = document.getElementById('mtAccount').value || '';
-            const phone = document.getElementById('mtPhone').value || '';
+            const account = document.getElementById('mtAccount').value;
+            const phone = document.getElementById('mtPhone').value;
             
             if (ci.length !== 11) {
                 alert('El carnet debe tener 11 dígitos');
@@ -968,13 +1385,43 @@
             launchCode(code);
         }
 
-        function launchMiturnoChange() {
-            const ci = document.getElementById('mtcCi').value;
+        function launchMiturnoQuery() {
+            const ci = document.getElementById('mtqCi').value;
             if (ci.length !== 11) {
                 alert('El carnet debe tener 11 dígitos');
                 return;
             }
-            launchCode(`*444*105*1*${ci}#`);
+            const code = `*444*107*${ci}#`;
+            launchCode(code);
+        }
+
+        function launchMiturnoChange() {
+            const ci = document.getElementById('mtcCi').value;
+            const date = document.getElementById('mtcDate').value;
+            
+            if (ci.length !== 11) {
+                alert('El carnet debe tener 11 dígitos');
+                return;
+            }
+            
+            let code = `*444*105*1*${ci}`;
+            if (date && date.length === 8) code += `*${date}`;
+            code += '#';
+            
+            launchCode(code);
+        }
+
+        function launchAmort() {
+            const credit = document.getElementById('amortCredit').value;
+            const amount = document.getElementById('amortAmount').value;
+            
+            if (!credit || !amount) {
+                alert('Completa número de crédito y monto');
+                return;
+            }
+            
+            const code = `*444*55*${credit}*${amount}#`;
+            launchCode(code);
         }
 
         // Cerrar modal al tocar fuera
