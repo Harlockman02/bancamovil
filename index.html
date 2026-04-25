@@ -103,12 +103,13 @@
             align-items: center;
             cursor: pointer;
             transition: background 0.15s;
-            text-decoration: none;
-            color: inherit;
+            -webkit-touch-callout: none;
+            user-select: none;
         }
         
         .operation:active {
             background: #f2f2f7;
+            transform: scale(0.98);
         }
         
         .operation:last-child {
@@ -134,12 +135,11 @@
             border-radius: 20px;
             font-weight: 600;
             font-size: 0.9rem;
-            cursor: pointer;
+            pointer-events: none;
             display: flex;
             align-items: center;
             gap: 6px;
             box-shadow: 0 2px 8px rgba(52, 199, 89, 0.3);
-            pointer-events: none;
         }
         
         .execute-btn.danger {
@@ -191,11 +191,11 @@
 
     <div class="header">
         <h1>📱 Transfermóvil USSD</h1>
-        <p>Operaciones bancarias sin app - iPhone & Android</p>
+        <p>Toca una operación para llamar directamente</p>
     </div>
 
     <div class="warning-box">
-        <strong>⚠️ Seguridad:</strong> Nunca marques <code>*444*68#</code> si alguien te lo pide. Ese código elimina tu registro y pueden robarte tu cuenta.
+        <strong>⚠️ Seguridad:</strong> Nunca marques <code>*444*68#</code> si alguien te lo pide. Ese código elimina tu registro.
     </div>
 
     <div class="bank-selector">
@@ -208,288 +208,293 @@
     <!-- SESIÓN -->
     <div class="section">
         <div class="section-title">🔐 Sesión</div>
-        <a class="operation" href="tel:*444*40*01#" id="auth-link">
+        <div class="operation" onclick="callUssd('*444*40*01#')" id="auth-op">
             <div class="op-info">
                 <h3>Autenticar <span class="code-tag" id="auth-code">*444*40*01#</span></h3>
                 <p>Iniciar sesión en el sistema</p>
             </div>
             <button class="execute-btn">Llamar</button>
-        </a>
-        <a class="operation" href="tel:*444*49*01#" id="register-link">
+        </div>
+        <div class="operation" onclick="callUssd('*444*49*01#')" id="register-op">
             <div class="op-info">
                 <h3>Registrar <span class="code-tag" id="register-code">*444*49*01#</span></h3>
                 <p>Registrar tarjeta en el sistema</p>
             </div>
             <button class="execute-btn warning">Registrar</button>
-        </a>
-        <a class="operation" href="tel:*444*70#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*70#')">
             <div class="op-info">
                 <h3>Cerrar Sesión <span class="code-tag">*444*70#</span></h3>
                 <p>Desconectar del sistema</p>
             </div>
             <button class="execute-btn">Salir</button>
-        </a>
-        <a class="operation" href="tel:*444*68*01#" id="delete-link">
+        </div>
+        <div class="operation" onclick="callUssd('*444*68*01#')" id="delete-op">
             <div class="op-info">
                 <h3>Eliminar Registro <span class="code-tag" id="delete-code">*444*68*01#</span></h3>
-                <p class="danger-box" style="margin:0;padding:4px 8px;font-size:0.75rem;">⚠️ Elimina tu registro del sistema</p>
+                <p style="color:#FF3B30;font-size:0.75rem;">⚠️ Elimina tu registro del sistema</p>
             </div>
             <button class="execute-btn danger">Eliminar</button>
-        </a>
+        </div>
     </div>
 
     <!-- CONSULTAS -->
     <div class="section">
         <div class="section-title">🔍 Consultas</div>
-        <a class="operation" href="tel:*444*46#">
+        <div class="operation" onclick="callUssd('*444*46#')">
             <div class="op-info">
                 <h3>Consultar Saldo <span class="code-tag">*444*46#</span></h3>
                 <p>Ver saldo de tu cuenta principal</p>
             </div>
             <button class="execute-btn">Consultar</button>
-        </a>
-        <a class="operation" href="tel:*444*48#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*48#')">
             <div class="op-info">
                 <h3>Últimas Operaciones <span class="code-tag">*444*48#</span></h3>
                 <p>Historial reciente de movimientos</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
-        <a class="operation" href="tel:*444*58#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*58#')">
             <div class="op-info">
                 <h3>Todas mis Cuentas <span class="code-tag">*444*58#</span></h3>
                 <p>Listado de cuentas asociadas</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
-        <a class="operation" href="tel:*444*62#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*62#')">
             <div class="op-info">
                 <h3>Consultar Límites <span class="code-tag">*444*62#</span></h3>
                 <p>Ver límites de tu tarjeta</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
-        <a class="operation" href="tel:*444*47#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*47#')">
             <div class="op-info">
                 <h3>Consultar Servicios <span class="code-tag">*444*47#</span></h3>
                 <p>Servicios asociados a tu cuenta</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
-        <a class="operation" href="tel:*444*85#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*85#')">
             <div class="op-info">
                 <h3>Tipo de Cambio <span class="code-tag">*444*85#</span></h3>
                 <p>Cotización actual MLC/CUP</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
-        <a class="operation" href="tel:*444*56#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*56#')">
             <div class="op-info">
                 <h3>Consulta ONAT <span class="code-tag">*444*56#</span></h3>
                 <p>Ver pagos de tributos</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
-        <a class="operation" href="tel:*444*65#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*65#')">
             <div class="op-info">
                 <h3>Giros Postales <span class="code-tag">*444*65#</span></h3>
                 <p>Consultar giros postales</p>
             </div>
             <button class="execute-btn">Ver</button>
-        </a>
+        </div>
     </div>
 
     <!-- OPERACIONES -->
     <div class="section">
         <div class="section-title">💸 Operaciones</div>
         
-        <a class="operation" href="tel:*444*45#">
+        <div class="operation" onclick="callUssd('*444*45#')">
             <div class="op-info">
                 <h3>Transferencia <span class="code-tag">*444*45#</span></h3>
                 <p>Enviar dinero a otra cuenta</p>
             </div>
             <button class="execute-btn">Transferir</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*54#">
+        <div class="operation" onclick="callUssd('*444*54#')">
             <div class="op-info">
                 <h3>Recarga Móvil <span class="code-tag">*444*54#</span></h3>
                 <p>Recargar saldo de cualquier móvil</p>
             </div>
             <button class="execute-btn">Recargar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*59#">
+        <div class="operation" onclick="callUssd('*444*59#')">
             <div class="op-info">
                 <h3>Recarga Nauta <span class="code-tag">*444*59#</span></h3>
                 <p>Recargar cuenta Nauta normal</p>
             </div>
             <button class="execute-btn">Recargar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*84#">
+        <div class="operation" onclick="callUssd('*444*84#')">
             <div class="op-info">
                 <h3>Recarga Nauta Hogar <span class="code-tag">*444*84#</span></h3>
                 <p>Recargar cuenta Nauta Hogar</p>
             </div>
             <button class="execute-btn">Recargar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*86#">
+        <div class="operation" onclick="callUssd('*444*86#')">
             <div class="op-info">
                 <h3>Recarga Nauta Plus <span class="code-tag">*444*86#</span></h3>
                 <p>Recargar cuenta Nauta Plus</p>
             </div>
             <button class="execute-btn">Recargar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*41#">
+        <div class="operation" onclick="callUssd('*444*41#')">
             <div class="op-info">
                 <h3>Pagar Electricidad <span class="code-tag">*444*41#</span></h3>
                 <p>Pago de servicio eléctrico</p>
             </div>
             <button class="execute-btn">Pagar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*42#">
+        <div class="operation" onclick="callUssd('*444*42#')">
             <div class="op-info">
                 <h3>Pagar Teléfono <span class="code-tag">*444*42#</span></h3>
                 <p>Pago de servicio telefónico</p>
             </div>
             <button class="execute-btn">Pagar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*43#">
+        <div class="operation" onclick="callUssd('*444*43#')">
             <div class="op-info">
                 <h3>Pagar ONAT <span class="code-tag">*444*43#</span></h3>
                 <p>Pago de tributos</p>
             </div>
             <button class="execute-btn">Pagar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*51#">
+        <div class="operation" onclick="callUssd('*444*51#')">
             <div class="op-info">
                 <h3>Pagar Agua <span class="code-tag">*444*51#</span></h3>
                 <p>Pago de servicio de agua</p>
             </div>
             <button class="execute-btn">Pagar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*67#">
+        <div class="operation" onclick="callUssd('*444*67#')">
             <div class="op-info">
                 <h3>Pagar Gas <span class="code-tag">*444*67#</span></h3>
                 <p>Pago de servicio de gas</p>
             </div>
             <button class="execute-btn">Pagar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*77#">
+        <div class="operation" onclick="callUssd('*444*77#')">
             <div class="op-info">
                 <h3>Recargar Tarjeta Propia <span class="code-tag">*444*77#</span></h3>
                 <p>Recarga desde cuenta bancaria</p>
             </div>
             <button class="execute-btn">Recargar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*55#">
+        <div class="operation" onclick="callUssd('*444*55#')">
             <div class="op-info">
                 <h3>Amortización <span class="code-tag">*444*55#</span></h3>
                 <p>Pago de créditos</p>
             </div>
             <button class="execute-btn">Pagar</button>
-        </a>
+        </div>
         
-        <a class="operation" href="tel:*444*93#">
+        <div class="operation" onclick="callUssd('*444*93#')">
             <div class="op-info">
                 <h3>Cuentas Joven Club <span class="code-tag">*444*93#</span></h3>
                 <p>Gestionar cuenta Joven Club</p>
             </div>
             <button class="execute-btn">Gestionar</button>
-        </a>
+        </div>
     </div>
 
     <!-- CONFIGURACIÓN -->
     <div class="section">
         <div class="section-title">⚙️ Configuración</div>
-        <a class="operation" href="tel:*444*69#">
+        <div class="operation" onclick="callUssd('*444*69#')">
             <div class="op-info">
                 <h3>Cambiar PIN <span class="code-tag">*444*69#</span></h3>
                 <p>Modificar clave de acceso</p>
             </div>
             <button class="execute-btn warning">Cambiar</button>
-        </a>
-        <a class="operation" href="tel:*444*61#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*61#')">
             <div class="op-info">
                 <h3>Cambiar Límite Tarjeta <span class="code-tag">*444*61#</span></h3>
                 <p>Modificar límite de operaciones</p>
             </div>
             <button class="execute-btn warning">Cambiar</button>
-        </a>
-        <a class="operation" href="tel:*444*60#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*60#')">
             <div class="op-info">
                 <h3>Cambiar Tarjeta <span class="code-tag">*444*60#</span></h3>
                 <p>Cambiar tarjeta asociada</p>
             </div>
             <button class="execute-btn warning">Cambiar</button>
-        </a>
-        <a class="operation" href="tel:*444*53#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*53#')">
             <div class="op-info">
                 <h3>Asociar/Actualizar Cuentas <span class="code-tag">*444*53#</span></h3>
                 <p>Gestionar cuentas vinculadas</p>
             </div>
             <button class="execute-btn warning">Gestionar</button>
-        </a>
-        <a class="operation" href="tel:*444*76#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*76#')">
             <div class="op-info">
                 <h3>Abrir Cuenta MLC <span class="code-tag">*444*76#</span></h3>
                 <p>Crear cuenta en moneda libremente convertible</p>
             </div>
             <button class="execute-btn warning">Abrir</button>
-        </a>
+        </div>
     </div>
 
     <!-- MITURNO -->
     <div class="section">
         <div class="section-title">🎫 MiTurno (CADECA)</div>
-        <a class="operation" href="tel:*444*102*01*1#" id="miturno-reserve-link">
+        <div class="operation" onclick="callUssd('*444*102*01*1#')" id="miturno-reserve-op">
             <div class="op-info">
                 <h3>Reservar Turno <span class="code-tag" id="miturno-reserve-code">*444*102*01*1#</span></h3>
                 <p>Para compra de divisas en CADECA</p>
             </div>
             <button class="execute-btn">Reservar</button>
-        </a>
-        <a class="operation" href="tel:*444*103#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*103#')">
             <div class="op-info">
                 <h3>Consulta Integrada <span class="code-tag">*444*103#</span></h3>
                 <p>Ver todos tus turnos solicitados</p>
             </div>
             <button class="execute-btn">Consultar</button>
-        </a>
-        <a class="operation" href="tel:*444*107#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*107#')">
             <div class="op-info">
                 <h3>Consultar por Carnet <span class="code-tag">*444*107#</span></h3>
                 <p>Buscar turno por CI</p>
             </div>
             <button class="execute-btn">Consultar</button>
-        </a>
-        <a class="operation" href="tel:*444*106*1#">
+        </div>
+        <div class="operation" onclick="callUssd('*444*106*1#')">
             <div class="op-info">
                 <h3>Eliminar Turno <span class="code-tag">*444*106*1#</span></h3>
                 <p>Cancelar reserva existente</p>
             </div>
             <button class="execute-btn danger">Eliminar</button>
-        </a>
-        <a class="operation" href="tel:*444*105*1#" id="miturno-change-link">
+        </div>
+        <div class="operation" onclick="callUssd('*444*105*1*01#')" id="miturno-change-op">
             <div class="op-info">
-                <h3>Cambiar Fecha Turno <span class="code-tag" id="miturno-change-code">*444*105*1#</span></h3>
+                <h3>Cambiar Fecha Turno <span class="code-tag" id="miturno-change-code">*444*105*1*01#</span></h3>
                 <p>Modificar fecha de reserva</p>
             </div>
             <button class="execute-btn warning">Cambiar</button>
-        </a>
+        </div>
     </div>
 
     <script>
         let bankCode = '01';
+
+        function callUssd(code) {
+            // Usamos window.location.assign en vez de href para evitar el diálogo de Safari
+            window.location.assign('tel:' + code);
+        }
 
         function selectBank(code) {
             bankCode = code;
@@ -498,19 +503,19 @@
             
             // Actualizar códigos que dependen del banco
             document.getElementById('auth-code').textContent = `*444*40*${bankCode}#`;
-            document.getElementById('auth-link').href = `tel:*444*40*${bankCode}#`;
+            document.getElementById('auth-op').setAttribute('onclick', `callUssd('*444*40*${bankCode}#')`);
             
             document.getElementById('register-code').textContent = `*444*49*${bankCode}#`;
-            document.getElementById('register-link').href = `tel:*444*49*${bankCode}#`;
+            document.getElementById('register-op').setAttribute('onclick', `callUssd('*444*49*${bankCode}#')`);
             
             document.getElementById('delete-code').textContent = `*444*68*${bankCode}#`;
-            document.getElementById('delete-link').href = `tel:*444*68*${bankCode}#`;
+            document.getElementById('delete-op').setAttribute('onclick', `callUssd('*444*68*${bankCode}#')`);
             
             document.getElementById('miturno-reserve-code').textContent = `*444*102*${bankCode}*1#`;
-            document.getElementById('miturno-reserve-link').href = `tel:*444*102*${bankCode}*1#`;
+            document.getElementById('miturno-reserve-op').setAttribute('onclick', `callUssd('*444*102*${bankCode}*1#')`);
             
             document.getElementById('miturno-change-code').textContent = `*444*105*1*${bankCode}#`;
-            document.getElementById('miturno-change-link').href = `tel:*444*105*1*${bankCode}#`;
+            document.getElementById('miturno-change-op').setAttribute('onclick', `callUssd('*444*105*1*${bankCode}#')`);
         }
     </script>
 </body>
